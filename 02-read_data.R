@@ -87,18 +87,18 @@ unique(flights$Year)
 # Reading big files -------------------------------------------------------
 
 # Some times system commands are faster
-system('head -5 data/flights/2008.csv')
+system('head -5 data/flights/2008.csv') #invocar al terminal 
 readLines("data/flights/2008.csv", n=5)
 
 # Num rows
-length(readLines("data/flights/2008.csv")) # Not so big files
+length(readLines("data/flights/2008.csv")) # Not so big files. Tardaría un montón. 
 
 nrow(data.table::fread("data/flights/2008.csv", select = 1L, nThread = 2)) # Using fread on the first column
 
 
 # Reading only what I neeed
 library(sqldf)
-jfk <- sqldf::read.csv.sql("data/flights/2008.csv", 
+jfk <- sqldf::read.csv.sql("downloads/2008.csv", 
                            sql = "select * from file where Dest = 'JFK'")
 head(jfk)
 

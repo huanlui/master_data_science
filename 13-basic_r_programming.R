@@ -33,6 +33,8 @@ if (numero_aleatorio <= 10) {
 # Repite lo mismo empleando la función: ifelse()
 # Usa la ayuda para consultar los parámetros de dicha función.
 
+print(paste(numero_aleatorio, ifelse(numero_aleatorio <= 10,"es menor o igual que 10","es mayor que 10")))
+
 # else if -----------------------------------------------------------------
 
 if (numero_aleatorio >= 10) {
@@ -66,7 +68,7 @@ for (ano in calendario){
 
 ano_actual <- as.numeric(format(Sys.Date(),'%Y'))
 
-# install.packages('lubridate')
+install.packages('lubridate')
 library(lubridate)
 ano_actual <- year(Sys.Date())
 
@@ -74,7 +76,7 @@ for (ano in calendario){
   ifelse(ano == ano_actual, print(paste("El año es", ano)), print(ano))
 }
 
-lapply( calendario, print)
+lapply( calendario, print) # devuelve una lista aplicando la función.  
 
 lapply( calendario, function(ano) ifelse(ano == ano_actual, print(paste("El año es", ano)), print(ano)))
 
@@ -92,9 +94,9 @@ busca_ano_actual <- function(ano) {
 busca_ano_actual(2000)
 busca_ano_actual(2018)
 
-sapply(calendario, busca_ano_actual)
+sapply(calendario, busca_ano_actual) 
 
-
+?sapply
 # Ejercicio ---------------------------------------------------------------
 
 # Año bisiesto: Haz una función que compruebe si un año es o no es bisiesto
@@ -104,11 +106,26 @@ sapply(calendario, busca_ano_actual)
 `%%` #División de enteros
 
 # Función:
+es_bisiesto <- function(ano) {
+  if(ano %% 4 != 0) return (FALSE)
+   if(ano %% 100 != 0) return (TRUE)
+    if(ano %% 400 == 0) return (TRUE)
 
+  return (FALSE)
+}
 # Aplica a todos los años del calendario la función anterior para comprobar cuáles son años bisiestos
-
+sapply(calendario, es_bisiesto) 
 # Guarda los años bisiestos en un vector
+bisiestos <- calendario[sapply(calendario, es_bisiesto) ]
+bisiestos
+es_bisiesto(2100)
+es_bisiesto(2200)
+es_bisiesto(2300)
+es_bisiesto(2400)
 
+calendario[!sapply(calendario, es_bisiesto) ]
+
+getwd()
 
 
 

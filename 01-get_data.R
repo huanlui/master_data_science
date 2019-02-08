@@ -35,7 +35,7 @@ utils:::format.object_size(file.info("downloads/2007.csv")$size, "auto") #Uncomp
 
 
 # Web Scraping ------------------------------------------------------------
-
+install.packages("rvest")
 library(rvest) # for read_html, html_*, ...
 library(stringr) # for str_*
 
@@ -99,7 +99,7 @@ cl <- makeCluster(detectCores() - 1) # create a cluster with x cores
 registerDoParallel(cl) # register the cluster
 
 res <- foreach(i = 1:num_files, 
-               .packages = c("R.utils", "stringr")) %dopar% {
+               .packages = c("R.utils", "stringr")) %dopar% {  #como voy a ejectuarlo en otro core, otro entorno, tengo que exportar estos paquetes a este entorno
                  this_file_link <- bz2_files_links[i]
                  download_flights_datasets(this_file_link)
                }

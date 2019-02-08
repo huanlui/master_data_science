@@ -5,7 +5,8 @@
 
 rm(list=ls()) 
 cat("\014")
-
+install.packages("readr",repos="http://cloud.r-project.org/", type="source")
+install.packages("tidyverse")
 library(tidyverse)
 
 #----------------------------------------------------------------------------
@@ -25,7 +26,11 @@ url_archivo <- "http://datos.madrid.es/egob/catalogo/207831-4-accidentes-trafico
 (destino <- file.path("data", nombre_archivo))
 
 download.file(url = url_archivo, destfile = destino)
-
+#está pivotado. Hay que despivotarlo. Hay un paper de tidy data:
+# EN CADA COLUMNA UNA VARIABLE Y EN CADA FILA UNA OBSERVACION. dEBERÍAMOS TENER TRES COLUMNAS
+#DÍA DE LA SEMANA
+#HORA
+#NUMERO DE ACCIDENTES
 accidentes_coche <- read_excel(destino, 
                                sheet = "2016",
                                skip = 7 )
@@ -39,17 +44,17 @@ tail(accidentes_coche)
 
 names(accidentes_coche)
 
-names(accidentes_coche) <- make.names(names(accidentes_coche))
+names(accidentes_coche) <- make.names(names(accidentes_coche))  # TE LIMPIA UN POCO LOS NOMBRES DE LAS COLUMNAS
 
 names(accidentes_coche)[2:8] <- c("Lun", "Mar", "Mie", "Jue", "Vie", "Sab", "Dom")
 
-accidentes_coche$Nº.Accidentes__7 <- NULL
+accidentes_coche$Nº.Accidentes..9 <- NULL
 
 accidentes_coche
 
 accidentes_coche <- accidentes_coche %>% gather(key   = dia_semana,
                                                 value = accidentes,
-                                                2:ncol(accidentes_coche))
+                                                2:ncol(accidentes_coche)) #PARA DESPIVOTAR 
 
 accidentes_coche %>%ggplot( aes(dia_semana, Rango.Horario)) + 
   geom_tile(aes(fill = accidentes),colour = "white") + 
@@ -79,7 +84,7 @@ alojamientos_madrid$lon <- as.numeric(alojamientos_madrid$lon)
 
 str(alojamientos_madrid)
 
-library(leaflet)
+library(leaflet) # librería para pintar el mapa
 
 leaflet(alojamientos_madrid) %>%
   setView(lng = -3.7037902, lat = 40.4167754, zoom = 12) %>% 
@@ -94,7 +99,7 @@ leaflet(alojamientos_madrid) %>%
 gapminder <- read_csv("https://raw.githubusercontent.com/joseramoncajide/curso_introduccion_R/master/data/gapminder.csv")
 gapminder <- read_csv("data/gapminder.csv")
 
-gapminder_por_continente <- split(gapminder, gapminder$continent) 
+gapminder_por_continente <- split(gapminder, gapminder$continent)  #he dividido un dataframe wn una lista de dataframes. 
 
 names(gapminder_por_continente)
 
@@ -107,7 +112,7 @@ dir.create("archivos_gapminder")
 # EJEMPLO: Exportar dataframe a csv
 write.csv(gapminder, "archivos_gapminder/gapminder.csv")
 
-unlink("archivos_gapminder/gapminder.csv")
+unlink("archivos_gapminder/gapminder.csv")#para borrar fichero. 
 
 # EJEMPLO: Archivo a generar
 file.path("archivos_gapminder", paste0("CONTINENTE", ".csv"))
@@ -115,12 +120,12 @@ file.path("archivos_gapminder", paste0("CONTINENTE", ".csv"))
 # EJEMPLO: lapply(vector, función)
 lapply( names(gapminder_por_continente), function(x) print(paste("Continente:",x)))
 
-lapply(names(gapminder_por_continente),
+lapply(names(gapminder_por_continente), //Escribimos cada dataframe en un fichero. 
        function (x)
          write.csv(
            gapminder_por_continente[[x]],
            row.names = F,
-           file = file.path("archivos_gapminder", paste0(x, ".csv"))
+           file = file.path("archivos_gapminder", paste0(x, ".csv")) #pase0 es un alias que no deja espacios en blanco. Es como paste sin separador
          ))
 
 
