@@ -262,8 +262,14 @@ mean(foo > 5)
 # n_security: the total number of cancelled flights by security reasons,
 # CancellationCode: reason for cancellation (A = carrier, B = weather, C = NAS, D = security)
 
+aa$CancellationCode
+summarise(aa,CancellationsBySecurity = sum(CancellationCode == "D", na.rm=T) )
 
+"Otra forma. Recordando table:"
+table(aa$CancellationCode,)
+table(aa$CancellationCode, aa$Month)
 
+# CancellationCode == "D" es una lista de booleanos. Si yo los sumo, se tratan cono 1's y 0's
 
 
 # %>% OPERATOR ----------------------------------------------------------------------
@@ -278,6 +284,7 @@ c(1, 2, 3, NA) %>% mean(na.rm = TRUE)
 
 
 summarize(filter(mutate(flights, diff = TaxiOut - TaxiIn),!is.na(diff)), avg = mean(diff))
+#Para escribir %>%, ponemos Ctrl + Shift + M
 
 # Vs
 
@@ -299,8 +306,12 @@ flights %>%
 # that counts the number of overnight flights. These flights have an arrival 
 # time that is earlier than their departure time. Only include flights that have 
 # no NA values for both DepTime and ArrTime in your count.
-
-
+flights$tim
+flights %>% 
+  filter(!is.na(ArrTime))%>% 
+  filter(!is.na(DepTime)) %>% 
+  filter(ArrTime < DepTime) %>% 
+  summarise(N = n())
 
 
 
@@ -325,11 +336,12 @@ flights %>%
 # Combine group_by with mutate
 rank(c(21, 22, 24, 23))
 
+#Tanto por uno de vuelos retrasados por compañía. 
 flights %>% 
   filter(!is.na(ArrDelay)) %>% 
   group_by(UniqueCarrier) %>% 
   summarise(p_delay = sum(ArrDelay >0)/n()) %>% 
-  mutate(rank = rank(p_delay)) %>% 
+  mutate(rank = rank(p_delay)) %>% # rank es para mostrar un 1, 2, 3 etc para mostrar el rankings de compañías por delay
   arrange(rank) 
 
 
@@ -340,24 +352,37 @@ flights %>%
 # of the delayed flights. Again add a new variable rank to the summary according to 
 # avg. Finally, arrange by this rank variable.
 
-
-
-
-
+flights %>% 
+  select(UniqueCarrier, ArrDelay) %>% 
+  filter(!is.na(ArrDelay)) %>% 
+  filter(ArrDelay > 0) %>% 
+  group_by(UniqueCarrier) %>% 
+  summarize(AverageDelay = mean(ArrDelay)) %>% 
+  mutate(Ranking = rank(AverageDelay)) %>% 
+  arrange(AverageDelay)
 
 # 2) How many airplanes only flew to one destination from JFK? 
 # The result contains only a single column named nplanes and a single row.
 
+flights %>% 
+  filter(Origin == 'JFK') %>% 
+  group_by(TailNum) %>% 
+  summarize(Destinations = n_distinct(Dest)) %>% 
+  filter(Destinations == 1) %>% 
+  summarize(Total = n()) 
 
-
-
-
+  
 # 3) Find the most visited destination for each carrier
 # Your solution should contain four columns:
 # UniqueCarrier and Dest, n, how often a carrier visited a particular destination,
 # rank, how each destination ranks per carrier. rank should be 1 for every row, 
 # as you want to find the most visited destination for each carrier.
-
+flights %>% 
+  group_by(UniqueCarrier, Dest) %>% 
+  summarize(N = n()) %>% 
+  mutate(Rank = rank(desc(N))) %>% 
+  #arrange(UniqueCarrier, Rank)
+  filter(Rank == 1)
 
 
 
@@ -369,13 +394,16 @@ flights %>%
 
 flights %>% 
   group_by(UniqueCarrier) %>% 
-  top_n(2, ArrDelay) %>% 
+  top_n(2, ArrDelay) %>%  #las dos conpañías con más ArrDelay
   select(UniqueCarrier,Dest, ArrDelay) %>% 
   arrange(desc(UniqueCarrier))
 
 
 # mutate_if(is.character, str_to_lower)
 # mutate_at
+"Cogeme todas las columnas que terminen en delay y a todas ellas le apliques una función.
+En el caso de abajo coger el valor (.) y divirlo entre dos. Modifa esas columnas en sí, 
+no crea nuevas columnas"
 
 foo <- flights %>% 
   head %>% 
@@ -388,9 +416,9 @@ foo %>%
 
 rm(foo)
 
-
+"También hay mutate_if, summarize_at"
 # Dealing with outliers ---------------------------------------------------
-
+"Outliers: datos que se salen de lo estándar y me joden la media. "
 # ActualElapsedTime: Elapsed Time of Flight, in Minutes
 summary(flights$ActualElapsedTime)
 
@@ -402,6 +430,10 @@ ggplot(flights) +
 
 boxplot(flights$ActualElapsedTime,horizontal = TRUE)
 
+#esto me dice cuales son los valores extremos
+# outlier = valor extremo = valor atípico: https://es.wikipedia.org/wiki/Valor_at%C3%ADpico
+# el boxplot aplica el creiterio de 3 veces la IQR
+# con esos valores extremos se suele o quitarlos o asignarloes el valor justo de 3*IQR. 
 outliers <- boxplot.stats(flights$ActualElapsedTime)$out
 length(outliers)
 outliers
