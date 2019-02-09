@@ -8,7 +8,7 @@ new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"
 if(length(new.packages)) install.packages(new.packages)
 
 
-flights <- readr::read_csv('data/flights/2008.csv')
+flights <- readr::read_csv('downloads/2008.csv')
 
 
 
@@ -18,45 +18,71 @@ flights <- readr::read_csv('data/flights/2008.csv')
 # Provide blazing fast performance for in-memory data by writing key pieces of code in C++.
 # Use the same code interface to work with data no matter where it’s stored, whether in a data frame, a data table or database.
 
+"Importante:"
 # The 5 verbs of dplyr
 # select – removes columns from a dataset
 # filter – removes rows from a dataset
 # arrange – reorders rows in a dataset
 # mutate – uses the data to build new columns and values
-# summarize – calculates summary statistics
+# summarize – calculates summary statistics. Agregación. 
 
 library(dplyr)
+"Es la librería más usada y con mucha funcionalidad. Pertenece a Tidyverse, por lo que
+si importáramos Tydyverse también estaría. 
+"
 
 # SELECT() ----------------------------------------------------------------------------
+"Para seleccionar VARIABLES. Se suelen llamar así en lugar de COLUMNAS"
+
 
 flights[c('ActualElapsedTime','ArrDelay','DepDelay')] # base R
 
-select(flights, ActualElapsedTime, ArrDelay, DepDelay)
+#otra forma:
+select(flights, ActualElapsedTime, ArrDelay, DepDelay) #es raro, no hay que poner el nombre entre comillas :S
+
+"Un tibble es una forma especial de dataframe de R, que es mejor. Permite, por ejemplo, que dentro de una celda haya datos anidaddos,
+como un dataframe dentro de la celda. Además, los tibble a la hora de mostrarlos no te muestran todo, sino que te muestra unas cuantas
+cfil as y te dice: ...y 10000000 más"
+
+
+"PAra convertir una dataframe plana de R a tibble:"
+require(readr)  # for read_csv()
+airports  <- read_csv('data/airports.csv')
+class(airports)
+select(airports,iata)
+as_data_frame(airports) # deprecated. Él lo usó, pero veo que es mejor as_tibble. 
+ as_tibble(airports)
+ 
+as_tibble(iris) # iris es un conjunto de datos de flores ya precargadpo en R. Como cars, que es otro. 
+plot(cars)
 
 # Funciones de ayuda
 
-# starts_with(“X”): every name that starts with “X”
-# ends_with(“X”): every name that ends with “X”
-# contains(“X”): every name that contains “X”
-# matches(“X”): every name that matches “X”, where “X” can be a regular expression
-# num_range(“x”, 1:5): the variables named x01, x02, x03, x04 and x05
-# one_of(x): every name that appears in x, which should be a character vector
 
-select(flights, Origin:Cancelled)
-select(flights, -(DepTime:AirTime))
-select(flights, UniqueCarrier, FlightNum, contains("Tail"), ends_with("Delay"))
+# starts_with(“X”): every VARIABLE name that starts with “X”
+# ends_with(“X”): every VARIABLE name that ends with “X”
+# contains(“X”): every VARIABLE name that contains “X”
+# matches(“X”): every VARIABLE name that matches “X”, where “X” can be a regular expression
+# num_range(“x”, 1:5): the variables named x01, x02, x03, x04 and x05
+# one_of(x): every VARIABLE name that appears in x, which should be a character vector
+
+select(flights, Origin:Cancelled) #desde la columna Origin a Cancelled
+select(flights, -(DepTime:AirTime)) #todas excepto las comprendidas entre DepTime y AirTime
+select(flights, UniqueCarrier, FlightNum, contains("Tail"), ends_with("Delay")) # quiero dos columnas concretas  + las que terminan con delay + la que contengan Tail
 
 # MUTATE() ----------------------------------------------------------------------------
-
+"Para construir columnas nuevas"
 foo <- mutate(flights, ActualGroundTime = ActualElapsedTime - AirTime)
-foo <- mutate(foo, GroundTime = TaxiIn + TaxiOut)
+foo <- mutate(foo, GroundTime = TaxiIn + TaxiOut) "tiempo de vuelo en tiera. "
 select(foo, ActualGroundTime, GroundTime)
 
+foo$PRUEBA_JL <- foo$GroundTime / 2
+select(foo, PRUEBA_JL, GroundTime)
 # Varias operaciones
 
 foo <- mutate(flights, 
               loss = ArrDelay - DepDelay, 
-              loss_percent = (loss/DepDelay) * 100 )
+              loss_percent = (loss/DepDelay) * 100 ) # ojo: ver que puedo ya usar la columna anterior. 
 
 ##########################################################################
 # Exercise: 
@@ -64,8 +90,7 @@ foo <- mutate(flights,
 #  avg_speed traveled by the plane for each flight (in mph). 
 # Hint: Average speed can be calculated as distance divided by number of hours of travel, and note that AirTime is given in minutes
 ##########################################################################
-
-
+mutate(foo, AvgSpeed = Distance / (AirTime  / 60)) %>% select(Distance,AirTime, AvgSpeed)
 
 
 # FILTER() --------------------------------------------------------------------------
@@ -114,7 +139,7 @@ filter(flights, Cancelled == 1, DepDelay > 0)
 
 
 # ARRANGE() --------------------------------------------------------------------------
-
+"Ordenación"
 # Cancelled
 ( cancelled <- select(flights, UniqueCarrier, Dest, Cancelled, CancellationCode, DepDelay, ArrDelay) )
 
@@ -138,7 +163,7 @@ rm(cancelled)
 arrange(flights, DepDelay + ArrDelay)
 
 # Keep flights leaving to DFW and arrange according to decreasing AirTime 
-arrange(filter(flights, Dest == 'JFK'), desc(AirTime))
+arrange(filter(flights, Dest == 'JFK'), desc(AirTime)) # concatenando funciones sin pipes. 
 
 
 
@@ -166,17 +191,21 @@ summarise(na_array_delay,
           latest = max(ArrDelay), 
           sd = sd(ArrDelay))
 
-hist(na_array_delay$ArrDelay)
+hist(na_array_delay$ArrDelay, breaks = 20)# breaks similar a bins
+hist(log(na_array_delay$ArrDelay), breaks = 20)  # a veces me interesa verlo en logarítimo
+hist(exp(log(na_array_delay$ArrDelay)), breaks = 20)  # para revertir. Aquí no sale igual porque había números negativos. 
 
 rm(na_array_delay)
 
 # Keep rows that have no NA TaxiIn and no NA TaxiOut: temp2
 taxi <- filter(flights, !is.na(TaxiIn), !is.na(TaxiOut))
 
+na.omit(flights) # na.omit quita todas las filas que tengan algún valor nulo. En este caso quita  TODAS. 
+
 ##########################################################################
 # Exercise: 
 # Print the maximum taxiing difference of taxi with summarise()
-
+summarise(taxi, MaxDifference= max(abs(TaxiIn - TaxiOut)))
 
 
 
@@ -203,10 +232,18 @@ aa <- filter(flights, UniqueCarrier == "AA")
 # p_canc: the percentage of cancelled flights,
 # avg_delay: the average arrival delay of flights whose delay is not NA.
 
+summarise(aa, 
+          TotalFlights= n(),
+          NumberOfCancelled = sum(Cancelled), 
+          PercentageOfCancelled = 100 *  NumberOfCancelled / TotalFlights, 
+          AverageDelay = mean(ArrDelay, na.rm = T)) 
 
 
-
-
+summarise(aa, 
+          TotalFlights= n(),
+          NumberOfCancelled = sum(Cancelled), 
+          PercentageOfCancelled = 100 * mean(Cancelled),  #otra forma, ya que es 0 y 1
+          AverageDelay = mean(ArrDelay, na.rm = T)) 
 
 # Next to these dplyr-specific functions, you can also turn a logical test into an aggregating function with sum() or mean(). 
 # A logical test returns a vector of TRUE’s and FALSE’s. When you apply sum() or mean() to such a vector, R coerces each TRUE to a 1 and each FALSE to a 0. 
