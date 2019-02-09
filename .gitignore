@@ -9,3 +9,4 @@ data/flights/*
 *.sqlite
 logs/*
 .DS_Store
+downloads
