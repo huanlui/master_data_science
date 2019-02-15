@@ -12,21 +12,26 @@ library(tibbletime)
 library(tidyverse)
 library(ggmap)
 
-( files <- list.files("data/airbnb/", pattern = '*.csv', full.names = T) )
-airbnb <- lapply(files, read_csv)
-airbnb <- bind_rows(airbnb)
+( files <- list.files("data/airbnb/", pattern = '*.csv', full.names = T) ) #dame todos los ficheros csv de la carpeta
+airbnb <- lapply(files, read_csv) # creame una lista con cada uno de ellos
+airbnb <- bind_rows(airbnb) #unemelos en un solo dataframe
 
 airbnb <- airbnb %>% 
-  as_tbl_time(last_modified) %>%
+  as_tbl_time(last_modified) %>% # le digo que use como ídnice de la dataframe el last_modified
   arrange(last_modified) %>%
   select(last_modified, price, overall_satisfaction, latitude, longitude)
 
 summary(airbnb)
 
 airbnb %>%
-  collapse_by(period = "1 year") %>%
+  collapse_by(period = "1 year") %>% # collapse cambia los valores del índice de la tabla (last_modified)
+  #. Collapse the index of a tbl_time object by time period.
+  #The index column is altered so that all dates that fall in a specified interval share a common date
   group_by(last_modified) %>%
   summarise(median_price = median(price, na.rm = T))
+
+#otra opcion
+airbnb %>% group_by(lubridate::year(last_modified)) %>% summarize(median_price=median(price))
 
 # Clean up
 airbnb %>%
@@ -37,7 +42,7 @@ airbnb %>%
 
 # Start
 airbnb %>%
-  collapse_by(period = "2 hour", clean = TRUE, side = "start") %>%
+  collapse_by(period = "2 hour", clean = TRUE, side = "start") %>% #el side es para decir si si la frontera es <= ó <. 
   group_by(last_modified) %>%
   summarise(median_price = median(price)) %>% 
   head
@@ -57,10 +62,12 @@ airbnb_plot <- airbnb %>%
   # Collapse and clean
   collapse_by(period = "hour", clean = TRUE, side = "start") %>%
   # Throw out a few outliers
-  filter(between(price, quantile(price, .05), quantile(price, .95))) %>% 
-  mutate(price = log10(price)) %>% 
-  qmplot(longitude, latitude, data = ., geom = "blank") +
-  geom_point(aes(color = price), alpha = .2, size = .3) +
+  filter(between(price, quantile(price, .05), quantile(price, .95))) %>% # hay nuy pocos que son muy caros
+  # y la mayoría son del mismo intervalo. Eso me rompe la visuaoización. Quito los muy bajos y los muy altos.
+  mutate(price = log10(price)) %>% #lo convierto a logarítimico para que estén más proximos unos de otro. 
+  qmplot(longitude, latitude, data = ., geom = "blank") + #esa es la libreía que pinta. Te pide centro de los dato. 
+  # Como esta función no etá pensada para pipes, se pude hacer usando ese '.'
+  geom_point(aes(color = price), alpha = .2, size = .3) + #digo que el color dependerá del precio. 
   scale_color_continuous(low = "red", high = "blue")
 
 airbnb_plot

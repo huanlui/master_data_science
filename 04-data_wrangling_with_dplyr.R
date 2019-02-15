@@ -8,9 +8,10 @@ new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"
 if(length(new.packages)) install.packages(new.packages)
 
 
+library(dplyr)
 flights <- readr::read_csv('downloads/2008.csv')
 
-
+flights %>% dim
 
 # DPLYR -------------------------------------------------------------------
 
@@ -462,10 +463,10 @@ flights %>% dim
 
 # Removing all NA's from the whole dataset
 
-flights %>% na.omit %>% dim
-flights %>% filter(complete.cases(.)) %>% dim
+flights %>% na.omit %>% dim # el problema de esto es que me quita todas las filas que tengan algún na. pierdo todas, de hecho. 
+flights %>% filter(complete.cases(.)) %>% dim #otra forma de hacerlo, pero también pierdo todas las filas
 library(tidyr) # for drop_na()
-flights %>% drop_na() %>% dim
+flights %>% drop_na() %>% dim # esta es una función de tydyverse
 
 # Removing all NA's from a varible
 
@@ -476,23 +477,29 @@ flights %>%
 # Better aproaches
 flights %>% 
   filter(is.na(DepTime)) %>% 
-  mutate(DepTime = coalesce(DepTime, 0L))
+  mutate(DepTime = coalesce(DepTime, 0L)) #si es nulo, ponle 0
 
 flights %>% 
   filter(is.na(DepTime)) %>% 
-  mutate(DepTime = coalesce(DepTime, CRSDepTime))
+  mutate(DepTime = coalesce(DepTime, CRSDepTime)) #si es 0, ponle ese valor
 
 unique(flights$CancellationCode)
 foo <- flights %>% 
-  mutate(CancellationCode = na_if(CancellationCode, ""))
+  mutate(CancellationCode = na_if(CancellationCode, "")) # si es na, pone ""
 unique(foo$CancellationCode)
 
 # CancellationCode: reason for cancellation (A = carrier, B = weather, C = National Air System, D = security)
 foo <- flights %>% 
   mutate(CancellationCode = recode(CancellationCode, "A"="Carrier", "B"="Weather", "C"="National Air System", 
-                                   .missing="Not available", 
-                                   .default="Others" ))
+                                   .missing="Not available", #missing para el caso de que  sea un na 
+                                   .default="Others" )) # es como un decode de SQL, un swtich de programación
+
+unique(foo$CancellationCode)
+
+foo$CancellationCode %>% unique
 rm(foo)
+
+
 
 
 
@@ -508,9 +515,9 @@ library(tidyr)
 flights %>% 
   group_by(Origin, Dest) %>% 
   summarise(n = n()) %>% 
-  arrange(-n) %>% 
-  spread(Origin, n) %>% 
-  gather("Origin", "n", 2:ncol(.)) %>% 
+  arrange(-n) %>%  #recuerda: es ordenar
+  spread(Origin, n) %>% # me exapande la columna de origen y la n(la pivoto, wide format)
+  gather("Origin", "n", 2:ncol(.)) %>%  #esto deshace lo anterior (lo despivota, a long format)
   arrange(-n) 
 
 
@@ -520,7 +527,8 @@ flights %>%
 flights %>% 
   group_by(UniqueCarrier, Dest) %>% 
   summarise(n = n()) %>%
-  ungroup() %>% 
+  ungroup() %>%  #deshace el group by y lo deja en una dataframe (tibble). Es útil, porque puede que una vez que tienes tu grupo ya no quieras
+  # que las funciones se apliquen a los grupos , sino como si fuera una dataframe. 
   group_by(Dest) %>% 
   mutate(total= sum(n), pct=n/total, pct= round(pct,4)) %>% 
   ungroup() %>% 
@@ -540,12 +548,10 @@ flights %>%
 
 flights %>% 
   head(20) %>% 
-  unite("code", UniqueCarrier, TailNum, sep = "-") %>% 
+  unite("code", UniqueCarrier, TailNum, sep = "-") %>%  #me crea una columna code con la concatenación de UniqueCarrier y TailNum usando el separador -
   select(code) %>% 
-  separate(code, c("code1", "code2")) %>% 
-  separate(code2, c("code3", "code4"), -3)
-
-
+  separate(code, c("code1", "code2")) %>%  #para separar. Si no pones separaddor, por defecto usa todo lo que no sean letros o números
+  separate(code2, c("code3", "code4"), -3) # separa quiotando los trs últimos caracteres. 
 
 
 # Dplyr: Joins ------------------------------------------------------------
@@ -567,12 +573,14 @@ airports
 
 # Before joing dataframes, check for unique keys
 airports %>% 
-  count(iata) %>% 
-  filter(n > 1)
+  count(iata) %>%  # count cuenta en número de casos únicos que hay de una cilumna. 
+  filter(n > 1) # filtro para buscar si alguno está repetido. No lo está. 
 
 
 flights2 <- flights %>% 
-  select(Origin, Dest, TailNum, UniqueCarrier, DepDelay)
+  select(Origin, Dest, TailNum, UniqueCarrier, DepDelay) #nos quedamos sólo con algunas columnas
+
+airlines %>% head(10)
 
 # Top delayed flight by airline
 flights2 %>% 
@@ -581,13 +589,20 @@ flights2 %>%
   left_join(airlines, by = c("UniqueCarrier" = "Code"))
 
 
+
 ##########################################################################
 # Exercises:
 # Join flights2 with airports dataset
 
+flights2 %>% head(10)
 
+airports2 = airports %>% select(iata,city)
 
+flights2 %>% 
+  left_join(airports2 %>% rename("OriginCity" ="city"), by = c("Origin" = "iata"))  %>% 
+  left_join(airports2 %>% rename("DestinationCity" ="city"), by = c("Dest" = "iata"))
 
+airports %>% head(5)
 
 
 # Dates with lubridate ----------------------------------------------------

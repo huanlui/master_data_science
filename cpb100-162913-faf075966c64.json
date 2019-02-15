@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "cpb100-162913",
+  "private_key_id": "faf075966c64b1868a86c304bebfad14f8e34fe6",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDuoRK6SzLWr9Qn\n4nGyeJtOPQT3inGtK7VchNNOdtG2a0Kpl2rrVYM5+GUrkAuHeVVQfqZpjTtgy72e\nGuydPm/+SLOoRrZ6ml2Ch20ECVAldy5L1DpQiKaBuUv/1UR25hy9/m7EFtTOr0AV\n5kAhu6GUz37+iGima3ZOzrU66x6fuORJt0vJOv7X1QJdCpCUlaAC/RLYV75PFXsf\naF2MHePkYJBzlzjuopm8SeOs39xEQOB1PExb+LqeJzb6x0jwaqSMYW3wKLoX7S+I\n6k1USqARFnGCMeqhndjS2Ro22AMohLO03+uuZ5Uf7LAj8eoVuTRGyh9jfMhsDClp\nlBrt1DI3AgMBAAECggEAF+5GqYYXEBlL+7/6ylIhXmRCK5entMfNr/yQuwKxdKDR\nwPOIFm0EnvtTx12dD7X8TKPsM75Py8eYOX3WaCKLKq4ceO4L028dnOnQkKIPy+IQ\nM4HnYzeBCJYOPWwkKeRZJ43s38oGXL/jJmRpNA4pXc9n8JtkxfkVlpZQ7cVcfy84\nTbi9VozjJplZy2iDwEkXI83q/oVmB9FuxPTrA1KeWpolB8yli1CkgPvFEUUoWC8Z\nJC++5GxDUrhoJY0krmtgKuUN2yGgOpaxIP+HvtiMk9R2/m+YsZERajAYX3gvRRHT\nYteISwfElSCQFpS8lOGO9Ii6ygk+wXzbhx2D452AwQKBgQD/8SfeWMYb9NYJtXDV\nMvtqoXTW2ZiuMbaJgolcT/pIdeA63Gtd1C7GjlfAnvPwFodFkBlj5oZfWdHMOV9Y\n1y2TqtTr5q3mck1ycf+axkRKxfAS5vFEjDj/8h6zXO1rdjREDEmK17FXFWItnJCd\nboJIgnN48YgjWyiHnur80PwdFwKBgQDurunOCjN1wKkU51aqMtdYY6IeZq2/RQf0\nugggHSKlXlspzHFvavheqke/5WqlTNe9luafHsLnh9wJkvBf7nElkQqJo2VgaHlH\nZCTtLLNF11VdT9vqgFz0LDITqyPpsRpeACpweaRnodJad+xcmV5R6AEJMgkTh2TH\ny8ncxgUH4QKBgDQYxmC/+TNfluHLCPictAh0bO/+wtFSVTGQXJ1puixdshLJIyGq\nOws3li0jLcxFCavjNQfcuKVYBxhm5T2ULzbLoyORhPxPb+xHwBulF+mQeNmgIKQv\nVrricdVYqQsiuGjRh3a3iOWM+LsID3e8MtDHnPGVWHy55XoVowdrEqZpAoGATBsn\n4BPunrBk+Y5eWvzFH6D9U5ZH9oIrbERZTOwdXP9+MBDJZs6EDaNcJ3sei0C6VfCk\n7r3fRfZTGhZpYR1lpKXf501biOcnLLVo9NtY+n8T8CIDrH1rpkvlV9ItLFnVX33M\nCnsvCgBWU5SDoG8i3RkOI4F51WlJoE+BuUzG0+ECgYEA7uUd+/bL6kNoldb0xn9K\n5IcR+bwG2lrQofyYUp08krp4nJ712L/octqetSaaShlw9eIVVwC42VTatkIF502t\nugd9UEy29tcJlnRvqz6FvvH3g5PZ4Ym3PH7n2qn+5rCeYnvf089MJ+FX/r7zqsUd\nW4tncCY17gNUcLR+Cpw+S54=\n-----END PRIVATE KEY-----\n",
+  "client_email": "gcp-api-language-kschool@cpb100-162913.iam.gserviceaccount.com",
+  "client_id": "106786631638335294490",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/gcp-api-language-kschool%40cpb100-162913.iam.gserviceaccount.com"
+}
