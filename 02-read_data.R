@@ -5,7 +5,31 @@
 
 list.of.packages <- c("R.utils", "tidyverse", "doParallel", "foreach", "sqldf")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
-if(length(new.packages)) install.packages(new.packages)
+if(length(new.packages)) install.packages(new.packages)Buenas tardes:
+  Os adjunto el planning que, a mi modo de ver, podríamos seguir para la formación a Tecoi.
+Primera Semana: taller de maquetación web
+Curso práctico sobre cómo maquetar una web usando:
+  •	HTML.
+•	CSS/SASS.
+•	Bootstrap.
+Lo ideal sería ir realizando una web poco a poco aprovechando cada paso para ir explicando conceptos. No le veo sentido, por ejemplo, a explicar una por una las etiquetas de HTML.
+Además, se podrían ir intercalando ejercicios para hacerlos con ellos.
+Si se hace bien, se podría aprovechar para la formación a nuevos empleados, como los chicos de La Paloma.
+Segunda Semana: taller de ES6 
+Curso práctico sobre uso de ES6 que salvo el detalle de que no es tipado, se parece mucho a Typescript. Se puede plantear una página que tenga cierta lógica, por ejemplo, un juego simple. Se seguiría la misma filosofía que la de la primera semana.
+Algunos conceptos que deberían inclurse:
+  •	Uso de prototype.
+•	Contexto en javascript.
+•	Novedades de ES6.
+Tercera Semana: curso de Angular
+Se podría reaprovechar el curso de Angular que, a mi entender, les fue bastante útil la otra vez. Si, sin embargo, consideráis que el curso no es adecuado, no dudéis en proponer (y realizarlos, claro está) cambios o mejoras.
+En el caso de que se reaprovechara el curso ya existente, el encargado de realizar la formación tendría que repasarse los vídeos y las transparencias y reproducirlo.
+Insisto en que es una formación que nos han pedido ellos y que han aceptado pagar aparte de las tres personas que estamos en desarrollo. La última vez no acabaron demasiado contentos con la formación de HTML, CSS y Javascript, así que creo que como empresa deberíamos responderles adecuadamente, aparte de que nos interesa económicamente.
+En cuanto a fechas, los chicos de Tecoi podrían empezar ya. Como sé que no es posible por planificación, lo suyo sería empezar sobre la primera quincena de marzo.
+Dejo en vuestras manos la decisión de quién/quiénes puede(n) impartir esos cursos.
+Un saludo.
+
+
 
 
 # Base R: Do not run
